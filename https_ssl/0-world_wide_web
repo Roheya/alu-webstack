@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Displays information about a domain's subdomains
+
+domain="$1"
+subdomain="$2"
+
+display_record() {
+    local name="$1"
+    local result
+    local record_type
+    local destination
+
+    result=$(dig "${name}.${domain}" +noall +answer | awk 'NR == 1 {print $4, $5}')
+
+    read -r record_type destination <<< "$result"
+
+    echo "The subdomain ${name} is a ${record_type} record and points to ${destination}"
+}
+
+if [ -n "$subdomain" ]; then
+    display_record "$subdomain"
+else
+    for name in www lb-01 web-01 web-02
+    do
+        display_record "$name"
+    done
+fi
