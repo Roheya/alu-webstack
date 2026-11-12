@@ -5,14 +5,11 @@ domain="$1"
 subdomain="$2"
 
 display_record() {
-    local name="$1"
-    local result
-    local record_type
-    local destination
+    name="$1"
+    answer=$(dig +noall +answer "${name}.${domain}" | awk 'NR == 1 {print $4, $5}')
 
-    result=$(dig "${name}.${domain}" +noall +answer | awk 'NR == 1 {print $4, $5}')
-
-    read -r record_type destination <<< "$result"
+    record_type=$(printf '%s\n' "$answer" | awk '{print $1}')
+    destination=$(printf '%s\n' "$answer" | awk '{print $2}')
 
     echo "The subdomain ${name} is a ${record_type} record and points to ${destination}"
 }
@@ -25,3 +22,4 @@ else
         display_record "$name"
     done
 fi
+
