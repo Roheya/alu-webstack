@@ -1,0 +1,22 @@
+global
+    daemon
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend http_front
+    bind *:80
+    http-request redirect scheme https code 301
+    default_backend web_backend
+
+frontend https_front
+    bind *:443 ssl crt /etc/haproxy/certs/www.beroheyatouray.tech.pem
+    default_backend web_backend
+
+backend web_backend
+    balance roundrobin
+    server web-01 web-01:80 check
+    server web-02 web-02:80 check
